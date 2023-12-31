@@ -4,7 +4,7 @@ import json
 import os
 from http.server import BaseHTTPRequestHandler
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 import requests
 from twilio.twiml.messaging_response import MessagingResponse
@@ -88,10 +88,9 @@ class handler(BaseHTTPRequestHandler):
     client = GithubClient()
 
     def do_POST(self):
-        # Parse the incoming data
         content_length = int(self.headers["Content-Length"])
         post_data = self.rfile.read(content_length)
-        data = urlparse.parse_qs(post_data.decode())
+        data = parse_qs(post_data.decode())
 
         incoming_msg = data.get("Body", [""])[0].strip()
         resp = MessagingResponse()
