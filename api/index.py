@@ -96,11 +96,11 @@ class handler(BaseHTTPRequestHandler):
         resp = MessagingResponse()
         msg = None
 
-        try:
-            self.client.update_github_file(incoming_msg)
-            msg = resp.message(f"Message saved from number {from_number}!")
-        except Exception as e:
-            msg = resp.message(str(e))
+        if from_number == MY_NUMBER:
+            try:
+                self.client.update_github_file(incoming_msg)
+            except Exception as e:
+                msg = resp.message(str(e))
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
