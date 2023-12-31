@@ -46,7 +46,7 @@ class GithubClient:
         return content_json
 
     def _encode_file_content(self, content_json: list[dict[str, Any]]) -> str:
-        content = json.dumps(content_json)
+        content = json.dumps(content_json, indent=4)
         return base64.b64encode(content.encode("utf-8")).decode("utf-8")
 
     def _commit_file(self, sha, content: str) -> None:
