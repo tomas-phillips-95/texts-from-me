@@ -9,6 +9,8 @@ from urllib.parse import parse_qs
 import requests
 from twilio.twiml.messaging_response import MessagingResponse
 
+MY_NUMBER = os.getenv("MY_NUMBER")
+
 
 class GithubClient:
     def __init__(self) -> None:
@@ -91,15 +93,14 @@ class handler(BaseHTTPRequestHandler):
 
         incoming_msg = data.get("Body", [""])[0].strip()
         resp = MessagingResponse()
+        msg = None
 
         try:
             self.client.update_github_file(incoming_msg)
-            msg = resp.message("Message received :^)")
         except Exception as e:
-            print(e)
-            msg = resp.message(f"Failed to save the message :^(")
+            msg = resp.message(str(e))
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
-        self.wfile.write(str(msg).encode("utf-8"))
+        self.wfile.write(str(msg or resp).encode("utf-8"))
