@@ -2,13 +2,12 @@ import base64
 import datetime
 import json
 import os
+from http.server import BaseHTTPRequestHandler
 from typing import Any
+from urllib.parse import urlparse
 
 import requests
-from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse
-
-app = Flask(__name__)
 
 
 class GithubClient:
@@ -85,21 +84,38 @@ class GithubClient:
 client = GithubClient()
 
 
-@app.route("/sms", methods=["GET", "POST"])
-def sms_reply() -> str:
-    """Respond to incoming calls with a simple text message."""
-    incoming_msg = request.values.get("Body", "").strip()
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write("Hello, world!".encode("utf-8"))
+        return
 
-    resp = MessagingResponse()
 
-    try:
-        client.update_github_file(incoming_msg)
-        resp.message("Message received :^)")
-    except Exception as e:
-        print(e)
-        resp.message("Failed to save the message :^(")
+class SMSHandler(BaseHTTPRequestHandler):
+    client = GithubClient()
 
-    return str(resp)
+    def do_POST(self):
+        # Parse the incoming data
+        content_length = int(self.headers["Content-Length"])
+        post_data = self.rfile.read(content_length)
+        data = urlparse.parse_qs(post_data.decode())
+
+        incoming_msg = data.get("Body", [""])[0].strip()
+        resp = MessagingResponse()
+
+        try:
+            self.client.update_github_file(incoming_msg)
+            resp.message("Message received :^)")
+        except Exception as e:
+            print(e)
+            resp.message("Failed to save the message :^(")
+
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(str(resp).encode("utf-8"))
 
 
 if __name__ == "__main__":
