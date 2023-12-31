@@ -100,7 +100,7 @@ class handler(BaseHTTPRequestHandler):
             resp.message("Message received :^)")
         except Exception as e:
             print(e)
-            resp.message("Failed to save the message :^(")
+            resp.message(f"Failed to save the message :^( {e}")
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
