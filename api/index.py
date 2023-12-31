@@ -92,11 +92,13 @@ class handler(BaseHTTPRequestHandler):
         data = parse_qs(post_data.decode())
 
         incoming_msg = data.get("Body", [""])[0].strip()
+        from_number = data.get("From", [""])[0].strip()
         resp = MessagingResponse()
         msg = None
 
         try:
             self.client.update_github_file(incoming_msg)
+            msg = resp.message(f"Message saved from number {from_number}!")
         except Exception as e:
             msg = resp.message(str(e))
 
