@@ -47,7 +47,7 @@ class GithubClient:
         content = json.dumps(content_json)
         return base64.b64encode(content.encode("utf-8")).decode("utf-8")
 
-    def _commit_file(self, sha: str | None, content: str) -> None:
+    def _commit_file(self, sha, content: str) -> None:
         payload = {
             "message": "Append SMS message",
             "content": content,
@@ -61,7 +61,7 @@ class GithubClient:
 
     def update_github_file(self, message) -> None:
         """Update a file in a GitHub repository with the given message."""
-        sha: str | None = None
+        sha = None
         content_json = []
 
         try:
@@ -116,7 +116,3 @@ class SMSHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write(str(resp).encode("utf-8"))
-
-
-if __name__ == "__main__":
-    app.run()
