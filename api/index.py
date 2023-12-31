@@ -68,11 +68,8 @@ class GithubClient:
             file_data = self._get_file_data()
             content_json = self._decode_file_content(file_data)
             sha = file_data["sha"]
-        except requests.exceptions.HTTPError as e:
-            if e.response and e.response.status_code == 404:
-                pass
-            else:
-                raise
+        except requests.exceptions.HTTPError:
+            pass
 
         content_json.append(
             {"message": message, "timestamp": str(datetime.datetime.now())}
@@ -100,7 +97,7 @@ class handler(BaseHTTPRequestHandler):
             resp.message("Message received :^)")
         except Exception as e:
             print(e)
-            resp.message(f"Failed to save the message :^( {e}")
+            resp.message(f"Failed to save the message :^(")
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
