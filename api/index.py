@@ -94,12 +94,12 @@ class handler(BaseHTTPRequestHandler):
 
         try:
             self.client.update_github_file(incoming_msg)
-            resp.message("Message received :^)")
+            msg = resp.message("Message received :^)")
         except Exception as e:
             print(e)
-            resp.message(f"Failed to save the message :^(")
+            msg = resp.message(f"Failed to save the message :^(")
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
-        self.wfile.write(str(resp).encode("utf-8"))
+        self.wfile.write(str(msg).encode("utf-8"))
