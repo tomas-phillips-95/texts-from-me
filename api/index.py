@@ -93,16 +93,16 @@ class handler(BaseHTTPRequestHandler):
 
         incoming_msg = data.get("Body", [""])[0].strip()
         from_number = data.get("From", [""])[0].strip()
-        resp = MessagingResponse()
         msg = None
 
         if from_number == MY_NUMBER:
             try:
                 self.client.update_github_file(incoming_msg)
             except Exception as e:
-                msg = resp.message(str(e))
+                msg = str(e)
 
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
-        self.wfile.write("what if I don't want to?".encode("utf-8"))
+        if msg:
+            self.wfile.write(msg.encode("utf-8"))
